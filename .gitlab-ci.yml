@@ -34,3 +34,4 @@ Deploy Instance 2 of MathHelper Server:
         - sudo docker-compose up --force-recreate -V
 #        - sudo docker run -d -p 8089:8089 --env-file /home/root_user/.env cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION
 
+
