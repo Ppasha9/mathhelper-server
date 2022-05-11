@@ -1,0 +1,36 @@
+stages:
+    - build
+    - deploy
+
+Build Application and Docker Image:
+    stage: build
+    tags:
+        - build
+    script:
+        - mvn clean
+        - mvn install -DskipTests
+        - sudo docker build . -t cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION
+        - sudo docker push cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION
+    only:
+        - gitlab-cicd
+
+Deploy Instance 1 of MathHelper Server:
+    stage: deploy
+    tags:
+        - runner-1
+    script:
+        - sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION --format="{{.ID}}")) || true
+        - sudo docker pull cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION
+        - sudo docker-compose up --force-recreate -V
+#        - sudo docker run -d -p 8089:8089 --env-file /home/root_user/.env cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION
+
+Deploy Instance 2 of MathHelper Server:
+    stage: deploy
+    tags:
+        - runner-2
+    script:
+        - sudo docker rm $(sudo docker stop $(sudo docker ps -a -q --filter ancestor=cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION --format="{{.ID}}")) || true
+        - sudo docker pull cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION
+        - sudo docker-compose up --force-recreate -V
+#        - sudo docker run -d -p 8089:8089 --env-file /home/root_user/.env cr.yandex/$CI_YC_DOCKER_REGISTRY_ID/$MATHHELPER_SERVER_IMAGE_NAME:$MATHHELPER_SERVER_VERSION
+
