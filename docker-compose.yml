@@ -1,0 +1,13 @@
+version: "3"
+services:
+  application:
+    image: cr.yandex/${CI_YC_DOCKER_REGISTRY_ID}/${MATHHELPER_SERVER_IMAGE_NAME}:${MATHHELPER_SERVER_VERSION}
+    ports:
+      - "8089:8089"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
